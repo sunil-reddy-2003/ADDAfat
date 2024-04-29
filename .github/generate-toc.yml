@@ -1,0 +1,31 @@
+name: Generate TOC
+
+on:
+  push: {}
+
+jobs:
+  generate-toc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install markdown-toc action
+        run: npm install actions/markdown-toc
+
+      - name: Generate TOC
+        run: npx markdown-toc README.md -o README.md
+
+      - name: Commit changes
+        run: git config --global user.email "github-actions[bot]@users.noreply.github.com" && git config --global user.name "GitHub Actions" && git commit -am "Update TOC" || true
+
+      - name: Push changes
+        uses: actions/checkout@v3
+        with:
+          fetch-token: ${{ secrets.GITHUB_TOKEN }}
+        run: git push origin master
